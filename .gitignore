@@ -1,0 +1,5 @@
+node_modules/
+chrome-win/
+build/
+package-lock.json
+accounts.txt

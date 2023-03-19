@@ -1,0 +1,22 @@
+{
+  "name": "auto-surfow",
+  "version": "1.0.0",
+  "description": "Auto Surfow",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "author": "Natoune",
+  "license": "MIT",
+  "dependencies": {
+    "@types/puppeteer": "^7.0.4",
+    "colors": "^1.4.0",
+    "enquirer": "^2.3.6",
+    "nexe": "^4.0.0-rc.2",
+    "puppeteer": "^19.2.2",
+    "puppeteer-extra": "^3.3.4",
+    "puppeteer-extra-plugin-stealth": "^2.11.1",
+    "rcedit": "^3.0.1",
+    "sleep": "^6.3.0"
+  }
+}
