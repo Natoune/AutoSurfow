@@ -4,7 +4,8 @@
   "description": "Auto Surfow",
   "main": "index.js",
   "scripts": {
-    "start": "node ."
+    "start": "node .",
+    "build": "node build.js"
   },
   "author": "Natoune",
   "license": "MIT",
