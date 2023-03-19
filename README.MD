@@ -23,7 +23,7 @@ username2:password2
 ### Mode ligne de commande
 Vous pouvez également indiquer les identifiants de votre compte en ligne de commande.
 ```bash
-$ node . --username "username" --password "password"
+$ node . --user "username" --password "password"
 ```
 
 ## Build
