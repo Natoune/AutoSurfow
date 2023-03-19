@@ -158,15 +158,16 @@ async function bot(user) {
     msleep(rn(1000, 2000));
     await page.click('#start_buttons button');
 
-    console.log(`\r\n`.repeat(12));
+    console.log(`\r\n`.repeat(7));
 
     process.on('exit', async () => {
-        console.log('Stopping the bot !');
+        console.log('\r\nStopping the bot !');
     
         await browser.close();
         process.exit();
     });
 
+    let first = true;
     while (true) {
         let points = await page.evaluate(() => {
             return document.querySelector('b#points').innerText;
@@ -191,7 +192,11 @@ async function bot(user) {
             }
         }
 
-        process.stdout.moveCursor(0, -8);
+        if (!first)
+            process.stdout.moveCursor(0, 0 - process.stdout.rows);
+        else
+            first = false;
+        
         process.stdout.clearScreenDown();
         process.stdout.write(
             `${points} points`.magenta + `\r\n` +
