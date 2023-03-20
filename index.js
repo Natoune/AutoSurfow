@@ -273,10 +273,7 @@ async function bot(user) {
         else
             first = false;
         
-        if (process.stdout.clearScreenDown() === undefined) {
-            process.stdout.write('\x1Bc');
-        }
-
+        process.stdout.write('\x1Bc');
         process.stdout.write(
             `${points} points`.magenta + `\r\n` +
             `Browsing ` + url.cyan + ` for ` + duration.blue + ` seconds` + `\r\n` +
