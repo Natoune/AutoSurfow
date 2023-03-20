@@ -6,6 +6,7 @@ const fse = require('fs-extra');
 const { resolve } = require('path');
 require('colors');
 puppeteer.use(StealthPlugin());
+const dirname = resolve();
 
 checkChromeInstallation();
 
@@ -46,8 +47,8 @@ function checkChromeInstallation() {
                 }
             });
         
-            console.log('Copying', folderToCopy.yellow, 'to', resolve(__dirname, 'chrome').yellow);
-            fse.copySync(folderToCopy, resolve(__dirname, 'chrome'), { overwrite: true });
+            console.log('Copying', folderToCopy.yellow, 'to', resolve(dirname, 'chrome').yellow);
+            fse.copySync(folderToCopy, resolve(dirname, 'chrome'), { overwrite: true });
 
             checkChromeInstallation();
         }
@@ -161,7 +162,7 @@ async function bot(user) {
     console.log(`Setting up the bot...`);
     let browser = await puppeteer.launch({
         headless: true, // TODO: true for production
-        executablePath: __dirname + '/chrome/chrome' + (process.platform === 'win32' ? '.exe' : ''),
+        executablePath: resolve(dirname , 'chrome', 'chrome' + (process.platform === 'win32' ? '.exe' : '')),
         timeout: 0,
         args: [
             '--no-sandbox',
