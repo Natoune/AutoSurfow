@@ -18,12 +18,11 @@ username2:password2
 ### Mode ligne de commande
 Vous pouvez également indiquer les identifiants de votre compte en ligne de commande.
 ```bash
-$ node . --user "username" --password "password"
+$ npm start -- --user "username" --password "password"
 ```
 
 ## Build
-Pour compiler le programme en exécutable, utilisez `npm run build`.  
-Le fichier `auto-surfow-win64.exe` sera alors disponible dans le dossier `build`.
+Pour compiler le programme en exécutable, utilisez `npm run build -- [os] [arch] [nodeVersion]`. Les paramètres `os`, `arch` et `nodeVersion` sont optionnels.  
 Pour modifier les paramètres de compilation, ainsi que le système d'exploitation cible, modifiez le fichier `build.js`.  
 Indiquez dans la variable `targets` (ligne 31) le.s système.s d'exploitation cible.s et la version de NodeJS en suivant la syntaxe suivante :  
 ```js
