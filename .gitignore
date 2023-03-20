@@ -1,5 +1,6 @@
 node_modules/
 chrome/
 build/
+build.bat
 package-lock.json
 accounts.txt
