@@ -3,12 +3,7 @@ Auto Surfow est un logiciel en ligne de commande permettant d'automatiser le sys
 Cela peut-être utile notamment pour se connecter à plusieurs comptes en même temps, ou pour automatiser le surf sur des serveurs fonctionnant avec NodeJS.  
 
 ## Installation
-### Version exécutable
-Pour installer Auto Surfow sur Windows x64, il est recommandé d'utiliser le fichier `auto-surfow-win64.exe` disponible dans la section [Releases](https://github.com/Natoune/AutoSurfow/releases).
-
-### Version source
-Clonez le dépôt Git et installez les dépendances avec `npm install`.  
-Pour lancer le programme, utilisez `npm start`.
+Pour installer Auto Surfow sur Windows x64, rendez-vous dans la section [Releases](https://github.com/Natoune/AutoSurfow/releases) et téléchargez le fichier correspondant à votre système d'exploitation.
 
 ## Utilisation
 ### Mode automatique
