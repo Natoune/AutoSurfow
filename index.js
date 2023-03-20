@@ -1,20 +1,86 @@
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-const { msleep } = require('sleep');
+const sleep = require('sleep-promise');
 const { Select, Input, Password } = require('enquirer');
-const fs = require('fs');
+const fse = require('fs-extra');
+const { resolve } = require('path');
 require('colors');
 puppeteer.use(StealthPlugin());
 
-if (process.argv.includes('--user') && process.argv.includes('--password')) {
-    let user = process.argv[process.argv.indexOf('--user') + 1];
-    let pass = process.argv[process.argv.indexOf('--password') + 1];
+checkChromeInstallation();
 
-    bot(user + ':' + pass);
-} else if (!fs.existsSync('accounts.txt')) {
-    addAccount();
-} else {
-    selectAccount();
+function checkChromeInstallation() {
+    if (!fse.existsSync('chrome')) {
+        const { getConfiguration } = require('puppeteer/lib/cjs/puppeteer/getConfiguration.js');
+        const configuration = getConfiguration();
+        const cacheDir = configuration.cacheDirectory;
+    
+        if (!fse.existsSync(resolve(cacheDir, 'chrome'))) {
+            downloadChrome(() => {
+                checkChromeInstallation();
+            });
+        } else {
+            let chromeVersions = [];
+            fse.readdirSync(resolve(cacheDir, 'chrome')).forEach((file) => {
+                let os = file.split('-')[0];
+                let version = file.split('-')[1];
+        
+                chromeVersions.push({
+                    name: file,
+                    os: os,
+                    version: version
+                });
+            });
+        
+            chromeVersions.sort((a, b) => {
+                return b.version - a.version;
+            });
+        
+            let chromeVersion = chromeVersions[0];
+            console.log('Found chrome version'.green, chromeVersion.version.cyan, 'for'.green, chromeVersion.os.cyan);
+        
+            let folderToCopy = resolve(cacheDir, 'chrome', chromeVersion.name);
+            fse.readdirSync(resolve(cacheDir, 'chrome', chromeVersion.name)).forEach((file) => {
+                if (file.split('-')[0] == 'chrome') {
+                    folderToCopy = resolve(folderToCopy, file);
+                }
+            });
+        
+            console.log('Copying', folderToCopy.yellow, 'to', resolve(__dirname, 'chrome').yellow);
+            fse.copySync(folderToCopy, resolve(__dirname, 'chrome'), { overwrite: true });
+
+            checkChromeInstallation();
+        }
+    } else {
+        main();
+    }
+}
+
+function downloadChrome(callback) {
+    console.log('Downloading chrome...');
+
+    const { downloadBrowser } = require('puppeteer/lib/cjs/puppeteer/node/install.js');
+    downloadBrowser().then((v) => {
+        console.log(v);
+        console.log('Browser downloaded !'.green);
+
+        callback();
+    }).catch((err) => {
+        console.log('Browser download failed'.red, err);
+    });
+}
+
+function main() {
+    if (process.argv.includes('--user') && process.argv.includes('--password')) {
+        let user = process.argv[process.argv.indexOf('--user') + 1];
+        let pass = process.argv[process.argv.indexOf('--password') + 1];
+
+        bot(user + ':' + pass);
+    } else if (!fse.existsSync('accounts.txt')) {
+        addAccount();
+    } else {
+        selectAccount();
+    }
 }
 
 function addAccount() {
@@ -35,7 +101,7 @@ function addAccount() {
                 process.exit();
             }
 
-            fs.appendFileSync('accounts.txt', user + ':' + pass + '\r\n');
+            fse.appendFileSync('accounts.txt', user + ':' + pass + '\r\n');
             console.log('The account has been added !'.green);
             
             selectAccount();
@@ -48,7 +114,7 @@ function addAccount() {
 }
 
 function selectAccount() {
-    let accountsFile = fs.readFileSync('accounts.txt', 'utf8').split('\r\n');
+    let accountsFile = fse.readFileSync('accounts.txt', 'utf8').split('\r\n');
     let accounts = accountsFile.map((account) => {
         return account.split(':')[0];
     }).filter((account) => {
@@ -95,12 +161,21 @@ async function bot(user) {
     console.log(`Setting up the bot...`);
     let browser = await puppeteer.launch({
         headless: true, // TODO: true for production
-        executablePath: __dirname + '/chrome-win/chrome.exe',
+        executablePath: __dirname + '/chrome/chrome' + (process.platform === 'win32' ? '.exe' : ''),
         timeout: 0,
         args: [
             '--no-sandbox',
-            '--disable-setuid-sandbox'
-        ]
+            '--disable-setuid-sandbox',
+            '--disable-accelerated-2d-canvas',
+            '--disable-gpu',
+            '--disable-web-security',
+            '--disable-features=CrossSiteDocumentBlockingIfIsolating,CrossSiteDocumentBlockingAlways,IsolateOrigins,site-per-process',
+            '--disable-site-isolation-trials'
+        ],
+        channel: 'chrome',
+        handleSIGINT: true,
+        handleSIGHUP: true,
+        handleSIGTERM: true
     });
 
     browser.on('disconnected', () => {
@@ -116,13 +191,13 @@ async function bot(user) {
 
     console.log('Connecting to the ' + user.split(':')[0].cyan + ' account...')
     
-    msleep(rn(1000, 2000));
+    await sleep(rn(1000, 2000));
     await page.type('input[name=username]', user.split(':')[0]);
-    msleep(rn(1000, 2000));
+    await sleep(rn(1000, 2000));
     await page.type('input[name=password]', user.split(':')[1]);
-    msleep(rn(1000, 2000));
+    await sleep(rn(1000, 2000));
     await page.click('.surfow_submit');
-    msleep(rn(1000, 2000));
+    await sleep(rn(1000, 2000));
 
     await page.waitForSelector('.dashboard').catch(async () => {
         console.log('Failed to log in to the '.red + user.split(':')[0].cyan + ' account !'.red);
@@ -145,17 +220,17 @@ async function bot(user) {
         await page.waitForSelector('.surfow_submit');
         await page.click('.surfow_submit');
 
-        msleep(rn(6000, 7000));
+        await sleep(rn(6000, 7000));
     }
 
-    msleep(rn(1000, 2000));
+    await sleep(rn(1000, 2000));
 
     await page.waitForSelector('.dimmer a.btn');
 
     await page.click('.dimmer a.btn');
     await page.waitForSelector('#start_buttons button');
 
-    msleep(rn(1000, 2000));
+    await sleep(rn(1000, 2000));
     await page.click('#start_buttons button');
 
     console.log(`\r\n`.repeat(7));
@@ -209,6 +284,6 @@ async function bot(user) {
             `Press `.red + `CTRL + C`.yellow + ` to stop the bot`.red + `\r\n`
         );
 
-        msleep(950);
+        await sleep(950);
     }
 }
