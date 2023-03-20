@@ -267,9 +267,6 @@ async function bot(user) {
                 bar += ' ';
             }
         }
-
-        if (!first && !process.argv.includes('--legacy-stdout'))
-            process.stdout.moveCursor(0, 0 - process.stdout.rows);
         
         process.stdout.write('\x1Bc');
         process.stdout.write(
@@ -284,7 +281,5 @@ async function bot(user) {
         );
 
         await sleep(950);
-
-        if (first) first = false;
     }
 }
